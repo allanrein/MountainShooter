@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import sys
+
 import pygame
 import pygame.mixer
 import code
@@ -16,7 +18,7 @@ class Menu:
 
     def __init__(self, window):
         self.window = window
-        self.surf=pygame.image.load("./asset/MenuBg.png")
+        self.surf=pygame.image.load("./asset/MenuBg.png").convert_alpha()  # Load the image for the menu background
         self.rect = self.surf.get_rect(left=0, top=0)
 
 
@@ -42,7 +44,7 @@ class Menu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()  # Close window
-                    quit()  # End Pygame loop
+                    sys.exit()  # End Pygame loop
                 if event.type == pygame.KEYDOWN: #key pressed
                     if event.key == pygame.K_UP: #up arrow key pressed
                         menu_option = (menu_option - 1) % len(MENU_OPTION) #get the rest of the division f ex menu option =2 (2 - 1) % 3 → 1 % 3 = 1
