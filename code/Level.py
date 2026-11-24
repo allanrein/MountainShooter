@@ -4,8 +4,9 @@
 import sys
 
 import pygame
+import random
 
-from code.Const import COLOR_WHITE, WIN_HEIGHT
+from code.Const import COLOR_WHITE, MENU_OPTION, SPAWN_TIME, WIN_HEIGHT, WIN_WIDTH, EVENT_ENEMY
 from code.Entity import Entity
 from code.EntityFactory import EntityFactory
 
@@ -13,12 +14,16 @@ from code.EntityFactory import EntityFactory
 class Level:
 
     def __init__(self, window, name, game_mode):
+        self.timeout = 20000  # Set the level timeout to 20 seconds (20000 milliseconds)
         self.window = window
         self.name=name
         self.game_mode=game_mode
         self.entity_list: list[Entity] = []  # List to hold all entities in the level
         self.entity_list.extend(EntityFactory.get_entity('Level1Bg'))  # Add background entities to the list
-        self.timeout = 20000  # Set the level timeout to 20 seconds (20000 milliseconds)
+        self.entity_list.append(EntityFactory.get_entity("Player1"))  # Add player entity to the list
+        if game_mode in (MENU_OPTION[1], MENU_OPTION[2]):
+            self.entity_list.append(EntityFactory.get_entity("Player2"))  # Add second player entity for 2P modes
+        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)  # Set a timer event for the level timeout
 
     def run(self):
         pygame.mixer_music.load("./asset/Level1.mp3")  # Load the background music for the level
@@ -34,6 +39,9 @@ class Level:
                 if event.type == pygame.QUIT:
                     pygame.quit()  # Close window
                     sys.exit()  # End Pygame loop
+                if event.type == EVENT_ENEMY:
+                    choice=random.choice(["Enemy1", "Enemy2"])  # Randomly choose between two enemy types
+                    self.entity_list.append(EntityFactory.get_entity(choice))  # Add an enemy entity to the list
 
             # printed text
             self.level_text(text_size=14, text=f'{self.name} - Timeout: {self.timeout / 1000 :.1f}s', text_color=COLOR_WHITE, text_pos=(10, 5))
