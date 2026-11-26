@@ -6,7 +6,7 @@ import sys
 import pygame
 import random
 
-from code.Const import COLOR_WHITE, MENU_OPTION, SPAWN_TIME, WIN_HEIGHT, WIN_WIDTH, EVENT_ENEMY
+from code.Const import C_WHITE, C_GREEN, C_CYAN, MENU_OPTION, SPAWN_TIME, WIN_HEIGHT, WIN_WIDTH, EVENT_ENEMY
 from code.Enemy import Enemy
 from code.Entity import Entity
 from code.EntityFactory import EntityFactory
@@ -41,8 +41,11 @@ class Level:
                     shoot = ent.shoot()  # Call the shoot method for Player and Enemy entities
                     if shoot is not None:
                         self.entity_list.append(shoot)  # Add the shot entity to the list if it exists
+                if ent.name == 'Player1':
+                    self.level_text(text_size=14, text=f'Player1 - Health: {ent.health} | Score: {ent.score}', text_color=C_GREEN, text_pos=(10, 25))
+                if ent.name == 'Player2':
+                    self.level_text(text_size=14, text=f'Player2 - Health: {ent.health} | Score: {ent.score}', text_color=C_CYAN, text_pos=(10, 45))
                     
-            pygame.display.flip()  # Update the display to show the drawn entities
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()  # Close window
@@ -50,14 +53,16 @@ class Level:
                 if event.type == EVENT_ENEMY:
                     choice=random.choice(["Enemy1", "Enemy2"])  # Randomly choose between two enemy types
                     self.entity_list.append(EntityFactory.get_entity(choice))  # Add an enemy entity to the list
-
+                
             # printed text
-            self.level_text(text_size=14, text=f'{self.name} - Timeout: {self.timeout / 1000 :.1f}s', text_color=COLOR_WHITE, text_pos=(10, 5))
-            self.level_text(text_size=14, text=f'fps: {clock.get_fps() :.0f}', text_color=COLOR_WHITE, text_pos=(10, WIN_HEIGHT - 35))
-            self.level_text(text_size=14, text=f'entidades: {len(self.entity_list)}', text_color=COLOR_WHITE, text_pos=(10, WIN_HEIGHT - 20))
-            pygame.display.flip()
+            self.level_text(text_size=14, text=f'{self.name} - Timeout: {self.timeout / 1000 :.1f}s', text_color=C_WHITE, text_pos=(10, 5))
+            self.level_text(text_size=14, text=f'fps: {clock.get_fps() :.0f}', text_color=C_WHITE, text_pos=(10, WIN_HEIGHT - 35))
+            self.level_text(text_size=14, text=f'entidades: {len(self.entity_list)}', text_color=C_WHITE, text_pos=(10, WIN_HEIGHT - 20))
+
+            #COLLISIONS
             EntityMediator.verify_collision(entity_list=self.entity_list)
             EntityMediator.verify_health(entity_list=self.entity_list)
+            pygame.display.flip()
         pass
 
     def level_text(self, text_size: int, text: str, text_color: tuple, text_pos: tuple):
